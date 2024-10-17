@@ -20,3 +20,4 @@ from .device_profile import DeviceProfile
 from .network_config import NetworkConfig
 from .captcha_solver import CaptchaSolver
 from .exceptions import BrowserNotAvailableError, CaptchaError, NetworkError
+from .authorization_router import AuthorizationRouter

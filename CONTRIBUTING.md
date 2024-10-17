@@ -8,15 +8,30 @@ To set up the development environment for Browseek, follow these steps:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/browseek/python.git
+   git clone https://github.com/yourusername/browseek.git
    ```
 
-2. Install the required dependencies:
+2. Create a virtual environment:
+   ```
+   python -m venv venv
+   ```
+
+3. Activate the virtual environment:
+   - For Windows:
+     ```
+     venv\Scripts\activate
+     ```
+   - For macOS and Linux:
+     ```
+     source venv/bin/activate
+     ```
+
+4. Install the required dependencies:
    ```
    pip install -r requirements.txt
    ```
 
-3. Run the tests to ensure everything is set up correctly:
+5. Run the tests to ensure everything is set up correctly:
    ```
    python -m unittest discover tests
    ```
@@ -63,4 +78,17 @@ To submit a pull request to Browseek, follow these steps:
 2. Make your changes and ensure that the tests pass.
 3. Commit your changes with a descriptive commit message.
 4. Push your changes to your forked repository.
-5. Open a pull
+5. Open a pull request against the main Browseek repository.
+
+Please provide a clear description of your changes and the problem they solve in the pull request.
+
+## Reporting Issues
+
+If you encounter any issues or have suggestions for improvements, please open an issue on the GitHub repository. When reporting an issue, please provide the following information:
+
+- A clear description of the issue or suggestion.
+- Steps to reproduce the issue, if applicable.
+- The version of Browseek you are using.
+- Any relevant error messages or logs.
+
+We appreciate your contributions to making Browseek better!

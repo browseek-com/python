@@ -39,7 +39,7 @@ class BrowserRouter:
         """Set network configuration including VPN and speed limits."""
         self.network_config = config
 
-    def execute(self, task: 'Task') -> Any:
+    def execute(self, url: str, task: Callable) -> Any:
         """Execute a single task."""
         browser = self._get_available_browser()
         if not browser:
@@ -47,13 +47,13 @@ class BrowserRouter:
 
         try:
             browser.configure(self.request_interceptor, self.device_profile, self.network_config)
-            result = task.execute(browser)
+            result = task(browser)
             return result
         except CaptchaError as e:
             if self.captcha_solver:
                 solution = self.captcha_solver.solve(e.captcha_type, e.captcha_data)
                 browser.solve_captcha(solution)
-                return self.execute(task)
+                return self.execute(url, task)
             else:
                 raise
         except NetworkError:
@@ -62,11 +62,11 @@ class BrowserRouter:
         finally:
             browser.cleanup()
 
-    def execute_batch(self, tasks: List['Task']) -> List[Any]:
+    def execute_batch(self, tasks: List[Tuple[str, Callable]]) -> List[Any]:
         """Execute a batch of tasks in parallel."""
         results = []
-        for task in tasks:
-            result = self.execute(task)
+        for url, task in tasks:
+            result = self.execute(url, task)
             results.append(result)
         return results
 

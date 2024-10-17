@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
-from browseek import BrowserRouter, BrowserInstance, Task
+from browseek import BrowserRouter, BrowserInstance
 
 class TestBrowserRouter(unittest.TestCase):
     def setUp(self):
@@ -15,29 +15,45 @@ class TestBrowserRouter(unittest.TestCase):
     def test_execute_task(self):
         mock_browser = MagicMock(spec=BrowserInstance)
         mock_browser.is_available.return_value = True
-        self.router.browsers = [mock_browser]
 
-        task = Task("https://example.com", lambda page: page.title())
-        result = self.router.execute(task)
+        with patch.object(self.router, '_get_available_browser', return_value=mock_browser):
+            def example_task(browser):
+                return "Example Title"
+
+            result = self.router.execute("https://example.com", example_task)
 
         mock_browser.configure.assert_called_once()
         mock_browser.cleanup.assert_called_once()
-        self.assertEqual(result, mock_browser.execute.return_value)
+        self.assertEqual(result, "Example Title")
 
     def test_execute_batch(self):
-        mock_browser = MagicMock(spec=BrowserInstance)
-        mock_browser.is_available.return_value = True
-        self.router.browsers = [mock_browser]
+        mock_browser1 = MagicMock(spec=BrowserInstance)
+        mock_browser1.is_available.return_value = True
 
-        tasks = [
-            Task("https://example.com", lambda page: page.title()),
-            Task("https://example.org", lambda page: page.url)
-        ]
-        results = self.router.execute_batch(tasks)
+        mock_browser2 = MagicMock(spec=BrowserInstance)
+        mock_browser2.is_available.return_value = True
+
+        with patch.object(self.router, '_get_available_browser', side_effect=[mock_browser1, mock_browser2]):
+            def task1(browser):
+                return "Example Title"
+
+            def task2(browser):
+                return "https://example.org"
+
+            tasks = [
+                ("https://example.com", task1),
+                ("https://example.org", task2)
+            ]
+
+            results = self.router.execute_batch(tasks)
 
         self.assertEqual(len(results), 2)
-        mock_browser.configure.assert_called()
-        mock_browser.cleanup.assert_called()
+        self.assertEqual(results[0], "Example Title")
+        self.assertEqual(results[1], "https://example.org")
+        mock_browser1.configure.assert_called_once()
+        mock_browser1.cleanup.assert_called_once()
+        mock_browser2.configure.assert_called_once()
+        mock_browser2.cleanup.assert_called_once()
 
     def test_close(self):
         mock_browser1 = MagicMock(spec=BrowserInstance)

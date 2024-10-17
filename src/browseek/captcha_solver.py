@@ -1,3 +1,4 @@
+from typing import Any
 from . import CAPTCHA_SERVICE, CAPTCHA_API_KEY
 
 class CaptchaSolver:

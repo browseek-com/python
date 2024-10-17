@@ -10,3 +10,7 @@ create publish script for project on pypi with unit tests inside
 
 create CHANGELOG.md with all versions & changes and update README.md
 create .env for all variables for each file in src to the top of file to load the .env file and define that variables
+
+
+replace "https://example.com" as VARIABLE in unit tests and get the value from .env
+Create for unittests an example html/index.html for webpage based on nginx server and include images from folder images  
