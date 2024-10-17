@@ -1,64 +1,44 @@
-from typing import Dict, Any
-from playwright.async_api import async_playwright
-from . import PROXY_ENABLED, PROXY_ROTATE_ON_FAILURE
+import asyncio
+from playwright.async_api import async_playwright, Browser, Page, BrowserContext
 
 class BrowserInstance:
-    def __init__(self, browser_type: str, options: Dict[str, Any] = None):
-        """Initialize a browser instance."""
+    def __init__(self, browser_type: str, options: dict = None):
         self.browser_type = browser_type
-        self.options = options or {}
-        self.proxy_enabled = self.options.get("proxy_enabled", PROXY_ENABLED)
-        self.proxy_rotate_on_failure = self.options.get("proxy_rotate_on_failure", PROXY_ROTATE_ON_FAILURE)
-        self.browser = None
-        self.context = None
-        self._page = None
+        self.options = options
+        self._browser: Browser = None
+        self._context: BrowserContext = None
+        self._page: Page = None
 
-    async def _launch_browser(self):
-        """Launch the browser instance."""
+    async def launch(self):
         playwright = await async_playwright().start()
-        browser_type = getattr(playwright, self.browser_type)
-        browser_options = self.options.get("browser_options", {})
-        if "headless" in browser_options:
-            del browser_options["headless"]
-        self.browser = await browser_type.launch(**browser_options, timeout=300000)
-        self.context = await self.browser.new_context()
-        self._page = await self.context.new_page()
+        self._browser = await playwright[self.browser_type].launch(**(self.options or {}))
+        self._context = await self._browser.new_context()
+        self._page = await self._context.new_page()
 
-    async def get_page(self):
-        """Get the page object."""
-        return self._page
-
-    async def configure(self, request_interceptor, device_profile, network_config):
-        """Configure the browser instance."""
-        if request_interceptor:
-            await self.context.route("**/*", request_interceptor.intercept)
-        if device_profile:
-            await self.context.set_viewport_size(device_profile.screen_size)
-            await self.context.set_user_agent(device_profile.user_agent)
-        if network_config:
-            if network_config.vpn_config:
-                await self.context.set_extra_http_headers({"X-VPN-Provider": network_config.vpn_config["provider"]})
-            if network_config.speed_limit:
-                await self.context.set_offline(True)
-                await self.context.set_extra_http_headers({"X-Speed-Limit": str(network_config.speed_limit)})
-
-    def is_available(self) -> bool:
-        """Check if the browser instance is available for use."""
-        return self.browser is not None and self.context is not None and self._page is not None
-
-    async def solve_captcha(self, solution: str):
-        """Solve CAPTCHA in the browser instance."""
-        await self._page.type("#captcha-input", solution)
-        await self._page.click("#captcha-submit")
-
-    async def cleanup(self):
-        """Clean up the browser instance after use."""
+    async def close(self):
         if self._page:
             await self._page.close()
-        if self.context:
-            await self.context.close()
+        if self._context:
+            await self._context.close()
+        if self._browser:
+            await self._browser.close()
 
-    async def quit(self):
-        """Quit the browser instance."""
-        if self.browser:
-            await self.browser.close()
+    async def execute(self, url: str, func):
+        await self._page.goto(url)
+        result = await func(self._page)
+        return result
+
+    def is_available(self):
+        return self._browser is not None and self._context is not None and self._page is not None
+
+    @property
+    def browser(self):
+        return self._browser
+
+    @property
+    def context(self):
+        return self._context
+
+    @property
+    def page(self):
+        return self._page
