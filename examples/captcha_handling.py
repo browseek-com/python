@@ -1,4 +1,11 @@
+import os
+from dotenv import load_dotenv
 from browseek import BrowserRouter, CaptchaSolver
+
+# Load environment variables from .env file
+load_dotenv()
+
+TEST_URL = os.getenv("TEST_URL")
 
 class CustomCaptchaSolver(CaptchaSolver):
     def solve(self, captcha_type, captcha_data):
@@ -18,7 +25,7 @@ def login_with_captcha(page):
         page.fill("#captcha-solution", captcha_solution)
     page.click("#login-button")
 
-task = "https://example.com/login", login_with_captcha
+task = TEST_URL, login_with_captcha
 router.execute(task)
 
 router.close()

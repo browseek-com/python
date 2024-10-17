@@ -6,6 +6,7 @@ Browseek is a sophisticated Python library designed for advanced multi-task and 
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+- [Getting Started with Docker](#getting-started-with-docker)
 - [Core Concepts](#core-concepts)
 - [API Reference](#api-reference)
 - [Configuration](#configuration)
@@ -39,6 +40,10 @@ print(result)
 # Clean up
 router.close()
 ```
+
+## Getting Started with Docker
+
+To start the Browseek library using Docker, please refer to the [DOCKER.md](DOCKER.md) file for detailed instructions.
 
 ## Core Concepts
 
@@ -109,16 +114,16 @@ router = BrowserRouter(config)
 
 ## Examples
 
-For detailed examples of how to use Browseek for various scenarios, please refer to the [EXAMPLES.md](EXAMPLES.md) file.
+For detailed examples of how to use Browseek for various scenarios, please refer to the [EXAMPLES.md](http://python.salomos.com/EXAMPLES.md) file.
 
 ## Contributing
 
-We welcome contributions to Browseek! Please see our [Contributing Guide](CONTRIBUTING.md) for more information on how to get started.
+We welcome contributions to Browseek! Please see our [Contributing Guide](http://python.salomos.com/CONTRIBUTING.md) for more information on how to get started.
 
 ## Testing
 
-Browseek uses the `unittest` framework for testing. For information on running tests and writing new tests, please refer to the [TESTING.md](TESTING.md) file.
+Browseek uses the `unittest` framework for testing. For information on running tests and writing new tests, please refer to the [TESTING.md](http://python.salomos.com/TESTING.md) file.
 
 ## Changelog
 
-For a detailed list of changes and version history, please see the [CHANGELOG.md](CHANGELOG.md) file.
+For a detailed list of changes and version history, please see the [CHANGELOG.md](http://python.salomos.com/CHANGELOG.md) file.

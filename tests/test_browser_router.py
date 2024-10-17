@@ -1,7 +1,14 @@
+import os
 import unittest
 from unittest.mock import MagicMock, patch
+from dotenv import load_dotenv
 
 from browseek import BrowserRouter, BrowserInstance
+
+# Load environment variables from .env file
+load_dotenv()
+
+TEST_URL = os.getenv("TEST_URL")
 
 class TestBrowserRouter(unittest.TestCase):
     def setUp(self):
@@ -20,7 +27,7 @@ class TestBrowserRouter(unittest.TestCase):
             def example_task(browser):
                 return "Example Title"
 
-            result = self.router.execute("https://example.com", example_task)
+            result = self.router.execute(TEST_URL, example_task)
 
         mock_browser.configure.assert_called_once()
         mock_browser.cleanup.assert_called_once()
@@ -38,18 +45,18 @@ class TestBrowserRouter(unittest.TestCase):
                 return "Example Title"
 
             def task2(browser):
-                return "https://example.org"
+                return TEST_URL
 
             tasks = [
-                ("https://example.com", task1),
-                ("https://example.org", task2)
+                (TEST_URL, task1),
+                (TEST_URL, task2)
             ]
 
             results = self.router.execute_batch(tasks)
 
         self.assertEqual(len(results), 2)
         self.assertEqual(results[0], "Example Title")
-        self.assertEqual(results[1], "https://example.org")
+        self.assertEqual(results[1], TEST_URL)
         mock_browser1.configure.assert_called_once()
         mock_browser1.cleanup.assert_called_once()
         mock_browser2.configure.assert_called_once()

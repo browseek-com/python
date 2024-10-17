@@ -4,6 +4,14 @@ All notable changes to the Browseek library will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.3] - 2023-06-09
+### Added
+- Support for configurable test URLs in unit tests using environment variables.
+- Example HTML file with images for testing purposes.
+
+### Changed
+- Updated Docker Compose setup to serve the example HTML file and images through the Nginx server.
+
 ## [0.1.0] - 2023-06-08
 ### Added
 - Initial release of the Browseek library

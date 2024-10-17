@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="browseek",
-    version="0.1.0",
+    version="0.1.3",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     install_requires=[
@@ -17,7 +17,8 @@ setup(
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: Apache2 License",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
