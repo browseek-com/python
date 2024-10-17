@@ -159,11 +159,40 @@ print(result)
 router.close()
 ```
 
+## To run local
+
+
+1. Create a virtual environment:
+   ```
+   python -m venv venv
+   ```
+
+2. Activate the virtual environment:
+   - For Windows:
+     ```
+     venv\Scripts\activate
+     ```
+   - For macOS and Linux:
+     ```
+     source venv/bin/activate
+     ```
+
+3. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+   
+4. Run 
+    ```bash
+    python basic_usage.py
+    ```
+
+
 To run the Docker example, use the following commands:
 
 ```bash
-docker-compose build
-docker-compose up
+docker compose build
+docker compose up
 ```
 
 This will build the Docker image and start a container running the Browseek library with the example script.

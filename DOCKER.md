@@ -20,12 +20,12 @@ This guide provides instructions on how to start the Browseek library using Dock
 
 3. Build the Docker image:
    ```
-   docker-compose build
+   docker compose build
    ```
 
 4. Run the Docker container:
    ```
-   docker-compose up
+   docker compose up
    ```
 
    This command will start the Browseek library and the example Nginx server.
@@ -40,7 +40,7 @@ This guide provides instructions on how to start the Browseek library using Dock
 
    For example, you can run the `examples/docker_example.py` script:
    ```
-   docker-compose exec browseek python examples/docker_example.py
+   docker compose exec browseek python examples/docker_example.py
    ```
 
    This script demonstrates how to use the Browseek library to perform a simple task on the example webpage.
@@ -50,7 +50,7 @@ This guide provides instructions on how to start the Browseek library using Dock
 
    Alternatively, you can run the following command in a separate terminal:
    ```
-   docker-compose down
+   docker compose down
    ```
 
 That's it! You have successfully started the Browseek library using Docker and accessed the example webpage served by the Nginx server.

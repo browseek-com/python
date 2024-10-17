@@ -1,0 +1,7 @@
+# Add your library's dependencies here
+requests
+beautifulsoup4
+playwright
+setuptools
+python-dotenv
+browseek

@@ -13,4 +13,7 @@ create .env for all variables for each file in src to the top of file to load th
 
 
 replace "https://example.com" as VARIABLE in unit tests and get the value from .env
-Create for unittests an example html/index.html for webpage based on nginx server and include images from folder images  
+Create for unittests an example html/index.html for webpage based on nginx server and include images from folder images
+
+
+sudo dnf install atk at-spi2-atk cups-libs libxkbcommon libXrandr libXdamage libdrm mesa-libgbm alsa-lib pango libpng12

@@ -1,3 +1,4 @@
+import asyncio
 from typing import Dict, Any, List, Tuple, Callable
 from . import MAX_CONCURRENT_BROWSERS, DEFAULT_TIMEOUT, RETRY_ATTEMPTS
 
@@ -21,11 +22,11 @@ class BrowserRouter:
         self.network_config = None
         self.captcha_solver = None
 
-    def add_browser(self, browser_type: str, count: int = 1, options: Dict[str, Any] = None):
+    async def add_browser(self, browser_type: str, count: int = 1, options: Dict[str, Any] = None):
         """Add browser instances to the pool."""
-        for _ in range(count):
-            browser = BrowserInstance(browser_type, options)
-            self.browsers.append(browser)
+        browser_instances = [BrowserInstance(browser_type, options) for _ in range(count)]
+        await asyncio.gather(*[browser._launch_browser() for browser in browser_instances])
+        self.browsers.extend(browser_instances)
 
     def set_request_interceptor(self, interceptor: RequestInterceptor):
         """Set a custom request interceptor for all managed browsers."""
@@ -39,45 +40,41 @@ class BrowserRouter:
         """Set network configuration including VPN and speed limits."""
         self.network_config = config
 
-    def execute(self, url: str, task: Callable) -> Any:
+    async def execute(self, url: str, task: Callable) -> Any:
         """Execute a single task."""
-        browser = self._get_available_browser()
+        browser = await self._get_available_browser()
         if not browser:
             raise BrowserNotAvailableError("No browser available to execute the task")
 
         try:
-            browser.configure(self.request_interceptor, self.device_profile, self.network_config)
-            result = task(browser)
+            await browser.configure(self.request_interceptor, self.device_profile, self.network_config)
+            result = await task(browser)
             return result
         except CaptchaError as e:
             if self.captcha_solver:
-                solution = self.captcha_solver.solve(e.captcha_type, e.captcha_data)
-                browser.solve_captcha(solution)
-                return self.execute(url, task)
+                solution = await self.captcha_solver.solve(e.captcha_type, e.captcha_data)
+                await browser.solve_captcha(solution)
+                return await self.execute(url, task)
             else:
                 raise
         except NetworkError:
             # Retry or handle network errors
             raise
         finally:
-            browser.cleanup()
+            await browser.cleanup()
 
-    def execute_batch(self, tasks: List[Tuple[str, Callable]]) -> List[Any]:
+    async def execute_batch(self, tasks: List[Tuple[str, Callable]]) -> List[Any]:
         """Execute a batch of tasks in parallel."""
-        results = []
-        for url, task in tasks:
-            result = self.execute(url, task)
-            results.append(result)
+        results = await asyncio.gather(*[self.execute(url, task) for url, task in tasks])
         return results
 
-    def _get_available_browser(self) -> BrowserInstance:
+    async def _get_available_browser(self) -> BrowserInstance:
         for browser in self.browsers:
             if browser.is_available():
                 return browser
         return None
 
-    def close(self):
+    async def close(self):
         """Close all browser instances and clean up resources."""
-        for browser in self.browsers:
-            browser.quit()
+        await asyncio.gather(*[browser.quit() for browser in self.browsers])
         self.browsers = []
