@@ -25,8 +25,12 @@ class BrowserRouter:
     async def add_browser(self, browser_type: str, count: int = 1, options: Dict[str, Any] = None):
         """Add browser instances to the pool."""
         browser_instances = [BrowserInstance(browser_type, options) for _ in range(count)]
-        await asyncio.gather(*[browser._launch_browser() for browser in browser_instances])
-        self.browsers.extend(browser_instances)
+        try:
+            await asyncio.gather(*[browser._launch_browser() for browser in browser_instances])
+            self.browsers.extend(browser_instances)
+        except Exception as e:
+            # Handle the exception or log the error
+            print(f"Failed to launch browser: {e}")
 
     def set_request_interceptor(self, interceptor: RequestInterceptor):
         """Set a custom request interceptor for all managed browsers."""
@@ -48,7 +52,9 @@ class BrowserRouter:
 
         try:
             await browser.configure(self.request_interceptor, self.device_profile, self.network_config)
-            result = await task(browser)
+            page = await browser.get_page()
+            await page.goto(url)
+            result = await task(page)
             return result
         except CaptchaError as e:
             if self.captcha_solver:

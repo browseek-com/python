@@ -14,7 +14,6 @@ async def main():
 
     # Add browser instances
     await router.add_browser("chromium", count=2)
-    await router.add_browser("firefox", count=1)
 
     # Use the router to perform a task
     result = await router.execute(TEST_URL, lambda page: page.title())
