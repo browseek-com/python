@@ -6,6 +6,12 @@ services:
     volumes:
       - ./src:/app/src
       - ./examples:/app/examples
+    environment:
+      - TEST_URL=https://example_service
+    ports:
+      - "8080:8080"
+    networks:
+      - browseek_network
 
   example_service:
     image: nginx
@@ -16,4 +22,10 @@ services:
       - ./html:/usr/share/nginx/html
       - ./images:/usr/share/nginx/html/images
     ports:
-      - 443:443
+      - "443:443"
+    networks:
+      - browseek_network
+
+networks:
+  browseek_network:
+    driver: bridge

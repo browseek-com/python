@@ -10,13 +10,24 @@ update_version() {
     sed -i "s/version=\".*\"/version=\"$1\"/" setup.py
 }
 
+# Check if current directory is a git repository
+if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    echo "Error: Not a git repository. Please run this script from the root of your git repository."
+    exit 1
+fi
+
+# Check for uncommitted changes
+if ! git diff-index --quiet HEAD --; then
+    echo "Error: There are uncommitted changes in the repository. Please commit or stash them before publishing."
+    exit 1
+fi
+
 # Prompt for new version
 echo "Current version: $(grep version setup.py | cut -d'"' -f2)"
 read -p "Enter new version number: " NEW_VERSION
 
 # Update version in setup.py
 update_version $NEW_VERSION
-
 
 # Check if virtual environment exists
 if [ ! -d "venv" ]; then
@@ -36,7 +47,6 @@ python setup.py sdist bdist_wheel
 # Install the package locally
 pip install --editable .
 
-
 # Run tests
 echo "Running tests..."
 #python -m unittest discover tests
@@ -49,7 +59,6 @@ rm -rf build dist *.egg-info
 echo "Building the package..."
 python setup.py sdist bdist_wheel
 
-
 # Check if tests passed
 if [ $? -ne 0 ]; then
     echo "Unit tests failed. Aborting publish."
@@ -61,8 +70,19 @@ echo "Checking the package..."
 twine check dist/*
 
 # Prompt for confirmation before uploading
-echo "Uploading to PyPI..."
-twine upload dist/*
+read -p "Do you want to upload to PyPI? (y/n) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    echo "Uploading to PyPI..."
+    twine upload dist/*
 
-echo "DONE"
+    # Create and push git tag
+    echo "Creating git tag v$NEW_VERSION..."
+    git tag -a "v$NEW_VERSION" -m "Version $NEW_VERSION"
+    git push origin "v$NEW_VERSION"
 
+    echo "DONE"
+else
+    echo "Upload cancelled."
+fi

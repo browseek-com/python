@@ -1,44 +1,28 @@
 import asyncio
-from playwright.async_api import async_playwright, Browser, Page, BrowserContext
+from .driver_router import DriverRouter
 
 class BrowserInstance:
     def __init__(self, browser_type: str, options: dict = None):
         self.browser_type = browser_type
         self.options = options
-        self._browser: Browser = None
-        self._context: BrowserContext = None
-        self._page: Page = None
+        self.driver_router: DriverRouter = None
 
     async def launch(self):
-        playwright = await async_playwright().start()
-        self._browser = await playwright[self.browser_type].launch(**(self.options or {}))
-        self._context = await self._browser.new_context()
-        self._page = await self._context.new_page()
+        self.driver_router = DriverRouter(self.browser_type)
+        await self.driver_router.initialize(**(self.options or {}))
 
     async def close(self):
-        if self._page:
-            await self._page.close()
-        if self._context:
-            await self._context.close()
-        if self._browser:
-            await self._browser.close()
+        if self.driver_router:
+            await self.driver_router.close()
 
     async def execute(self, url: str, func):
-        await self._page.goto(url)
-        result = await func(self._page)
+        await self.driver_router.goto(url)
+        result = await func(self.driver_router.driver)
         return result
 
     def is_available(self):
-        return self._browser is not None and self._context is not None and self._page is not None
+        return self.driver_router is not None and self.driver_router.driver is not None
 
     @property
-    def browser(self):
-        return self._browser
-
-    @property
-    def context(self):
-        return self._context
-
-    @property
-    def page(self):
-        return self._page
+    def driver(self):
+        return self.driver_router.driver if self.driver_router else None
