@@ -6,8 +6,18 @@ services:
     volumes:
       - ./src:/app/src
       - ./examples:/app/examples
+    env_file:
+      - .env
     environment:
-      - TEST_URL=https://example_service
+      - MAX_CONCURRENT_BROWSERS=${MAX_CONCURRENT_BROWSERS}
+      - DEFAULT_TIMEOUT=${DEFAULT_TIMEOUT}
+      - RETRY_ATTEMPTS=${RETRY_ATTEMPTS}
+      - PROXY_ENABLED=${PROXY_ENABLED}
+      - PROXY_ROTATE_ON_FAILURE=${PROXY_ROTATE_ON_FAILURE}
+      - DNS_OVER_HTTPS=${DNS_OVER_HTTPS}
+      - CAPTCHA_SERVICE=${CAPTCHA_SERVICE}
+      - CAPTCHA_API_KEY=${CAPTCHA_API_KEY}
+      - TEST_URL=${TEST_URL}
     ports:
       - "8080:8080"
     networks:

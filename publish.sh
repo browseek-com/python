@@ -8,6 +8,7 @@ set -e
 # Function to update version in setup.py
 update_version() {
     sed -i "s/version=\".*\"/version=\"$1\"/" setup.py
+    git tag "$1"
 }
 
 # Check if current directory is a git repository
@@ -70,19 +71,8 @@ echo "Checking the package..."
 twine check dist/*
 
 # Prompt for confirmation before uploading
-read -p "Do you want to upload to PyPI? (y/n) " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-    echo "Uploading to PyPI..."
-    twine upload dist/*
+echo "Uploading to PyPI..."
+twine upload dist/*
 
-    # Create and push git tag
-    echo "Creating git tag v$NEW_VERSION..."
-    git tag -a "v$NEW_VERSION" -m "Version $NEW_VERSION"
-    git push origin "v$NEW_VERSION"
+echo "DONE"
 
-    echo "DONE"
-else
-    echo "Upload cancelled."
-fi

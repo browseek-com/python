@@ -4,6 +4,12 @@ All notable changes to the Browseek library will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.6] - 2024-10-17
+### Changed
+- Updated Dockerfile to include default environment variables.
+- Modified docker-compose.yml to use environment variables from .env file.
+- Improved configuration management for Docker deployments.
+
 ## [0.1.5] - 2024-10-17
 ### Added
 - Added `DriverRouter` class to support multiple browser automation frameworks (Playwright, Selenium, Puppeteer).
